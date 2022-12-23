@@ -203,11 +203,10 @@
             });
             function reset(){
                 var ttl_hrg2 = $('#ttl_hrg2').val();
-                var ttl_majo = $('#ttl_majo').val();
                 var tax2 = $('.tax2').val();
                 var round2 = $('.round2').val();
                 var service2 = $('.servis2').val();
-                var ttl = parseInt(ttl_hrg2) + parseInt(ttl_majo) + parseInt(tax2) + parseInt(service2) + parseInt(round2)
+                var ttl = parseInt(ttl_hrg2) + parseInt(tax2) + parseInt(service2) + parseInt(round2)
 
 
                 $('#view_discount').val('');
@@ -233,7 +232,6 @@
             $(document).on('change', '#data_discount', function(){
                 var id_disc = $(this).val();
                 var ttl_hrg = $('#ttl_hrg').val();
-                var ttl_majo = $('#ttl_majo').val();
                 var ttl_hrg2 = $('#ttl_hrg2').val();
                 var view_discount = $('#view_discount').val();
                 var tax = $('#tax').val();
@@ -248,6 +246,14 @@
                 var jumlahDp = $("#jumlah_dp").val();
                 if(id_disc == 0) {
                     reset()
+                    // $('#view_discount').val('');
+                    // $('#total1').val(ttl);
+                    // $('.sDiskon').val(round2);
+                    // $('.round').val(round2);
+                    // $('.servis1').val(service2);
+                    // $('.servis').html(service2);
+                    // $('.tax1').val(tax2);
+                    // $('.tax').html(tax2);
 
                 } else {
                     $.ajax({
@@ -263,7 +269,7 @@
 
                             }
                             $("#jumlah_discount").val(data.disc);
-                            var tHarga = (parseInt(ttl_hrg) + parseInt(ttl_majo)) * (100 - parseInt(data.disc)) / 100 - voucher
+                            var tHarga = parseInt(ttl_hrg) * (100 - parseInt(data.disc)) / 100 - voucher
                             var service = tHarga * 0.07;
                             var tax = (tHarga + service) * 0.1;
                             var t = tHarga + service + tax;
@@ -312,13 +318,11 @@
                 var view_discount = $('#view_discount').val()
                 var gosen = $('#gosen').val();
                 var ttl_hrg = $('#ttl_hrg').val();
-                var ttl_majo = $('#ttl_majo').val();
                 var ttl_hrg2 = $('#ttl_hrg2').val();
                 var sDiskon = $('.sDiskon').val();
                 var vDiskon = $('.vDiskon').val();
                 var jumlahDp = $("#jumlah_dp").val();
                 var total_tetap = $('#totalTetap').val();
-                
                 if (kode == '') {
                     Swal.fire({
                         toast: true,
@@ -354,7 +358,7 @@
                                         icon: 'error',
                                         title: 'Voucher sudah terpakai'
                                     });
-                                } else if(data == 'expired') {
+                                } if(data == 'expired') {
                                     Swal.fire({
                                         toast: true,
                                         position: 'top-end',
@@ -383,12 +387,11 @@
                                             $("#view_dp").val('');
                                         }
                                         $('#rupiah').val(data);
-                                        var subTotalMajo = parseInt(ttl_hrg) + parseInt(ttl_majo)
+
                                         if(sDiskon == parseInt($('.round').val())) {
-                                            var tot_orderan = subTotalMajo - data;
-                                          
+                                            var tot_orderan = ttl_hrg - data;
+
                                         } else {
-                                            alert(2)
 
                                             var tot_orderan = parseInt(sDiskon) - data;
                                         }

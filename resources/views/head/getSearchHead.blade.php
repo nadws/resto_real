@@ -2,6 +2,7 @@
     .table tr:not(.header) {
         display: none;
     }
+
 </style>
 
 <table class="table" width="100%">
@@ -34,62 +35,28 @@
         </tr>
         <?php $menu = DB::select(
             "SELECT b.nm_menu, c.nm_meja, a.*,e.ttlMenu,f.ttlMenuSemua FROM tb_order AS a LEFT JOIN view_menu AS b ON b.id_harga = a.id_harga
-                            LEFT JOIN (SELECT d.id_harga, COUNT(id_harga) as ttlMenu FROM `tb_order` as d where d.id_lokasi = '$lokasi' and d.id_meja = '$m->id_meja' and d.selesai = 'dimasak' and aktif = '1' and void = 0 GROUP BY d.id_harga) as e on b.id_harga = e.id_harga
-                            LEFT JOIN (SELECT d.id_harga, COUNT(id_harga) as ttlMenuSemua FROM `tb_order` as d where d.id_lokasi = '$lokasi' and d.selesai = 'dimasak' and aktif = '1' and void = 0 GROUP BY d.id_harga) as f on b.id_harga = f.id_harga
-                            LEFT JOIN tb_meja AS c ON c.id_meja = a.id_meja where a.id_lokasi = '$lokasi' and a.id_meja = '$m->id_meja' and a.selesai = 'dimasak' and aktif = '1' and void = 0 ORDER BY a.id_order",
+                    LEFT JOIN (SELECT d.id_harga, COUNT(id_harga) as ttlMenu FROM `tb_order` as d where d.id_lokasi = '$lokasi' and d.id_meja = '$m->id_meja' and d.selesai = 'dimasak' and aktif = '1' and void = 0 GROUP BY d.id_harga) as e on b.id_harga = e.id_harga
+                    LEFT JOIN (SELECT d.id_harga, COUNT(id_harga) as ttlMenuSemua FROM `tb_order` as d where d.id_lokasi = '$lokasi' and d.selesai = 'dimasak' and aktif = '1' and void = 0 GROUP BY d.id_harga) as f on b.id_harga = f.id_harga
+                    LEFT JOIN tb_meja AS c ON c.id_meja = a.id_meja where b.nm_menu LIKE '%$search%' AND a.id_lokasi = '$lokasi' and a.id_meja = '$m->id_meja' and a.selesai = 'dimasak' and aktif = '1' and void = 0 ORDER BY a.id_order",
         ); ?>
         <?php $menu2 = DB::select(
             "SELECT b.nm_menu, c.nm_meja, a.*,e.ttlMenu,f.ttlMenuSemua FROM tb_order AS a 
-                            LEFT JOIN view_menu AS b ON b.id_harga = a.id_harga
-                            LEFT JOIN (SELECT d.id_harga, COUNT(id_harga) as ttlMenu FROM `tb_order` as d where d.id_lokasi = '$lokasi' and d.id_meja = '$m->id_meja' and d.selesai != 'dimasak' and aktif = '1' and void = 0 GROUP BY d.id_harga) as e on b.id_harga = e.id_harga
-                            LEFT JOIN (SELECT d.id_harga, COUNT(id_harga) as ttlMenuSemua FROM `tb_order` as d where d.id_lokasi = '$lokasi' and d.selesai != 'dimasak' and aktif = '1' and void = 0 GROUP BY d.id_harga) as f on b.id_harga = f.id_harga
-                            LEFT JOIN tb_meja AS c ON c.id_meja = a.id_meja where a.id_lokasi = '$lokasi' and a.id_meja = '$m->id_meja' and a.selesai != 'dimasak' and aktif = '1' and void = 0 ORDER BY a.id_order",
+                    LEFT JOIN view_menu AS b ON b.id_harga = a.id_harga
+                    LEFT JOIN (SELECT d.id_harga, COUNT(id_harga) as ttlMenu FROM `tb_order` as d where d.id_lokasi = '$lokasi' and d.id_meja = '$m->id_meja' and d.selesai != 'dimasak' and aktif = '1' and void = 0 GROUP BY d.id_harga) as e on b.id_harga = e.id_harga
+                    LEFT JOIN (SELECT d.id_harga, COUNT(id_harga) as ttlMenuSemua FROM `tb_order` as d where d.id_lokasi = '$lokasi' and d.selesai != 'dimasak' and aktif = '1' and void = 0 GROUP BY d.id_harga) as f on b.id_harga = f.id_harga
+                    LEFT JOIN tb_meja AS c ON c.id_meja = a.id_meja where b.nm_menu LIKE '%$search%' AND a.id_lokasi = '$lokasi' and a.id_meja = '$m->id_meja' and a.selesai != 'dimasak' and aktif = '1' and void = 0 ORDER BY a.id_order",
         );
         $no = 1;
         ?>
 
         @php
-            $setMenit = DB::table('tb_menit')
-                ->where('id_lokasi', $lokasi)
-                ->first();
-        @endphp
+            $setMenit = DB::table('tb_menit')->where('id_lokasi', $lokasi)->first();
 
-        <?php foreach ($menu2 as $m) : if($m->nm_menu == ''){continue;} ?>
-        <tr>
-            <td></td>
-            <td style="text-transform: lowercase;"><?= $m->nm_menu ?> <span
-                    class="text-danger">({{ $m->ttlMenuSemua }})</span></td>
-            <td><?= $m->request ?></td>
-            <td><?= $m->qty ?></td>
-            <td><a kode="<?= $m->id_order ?>" class="btn btn-warning text-light btn-sm cancel"><i
-                        class="fas fa-times"></i></a></td>
-            <?php foreach ($tb_koki as $k) : ?>
-            <?php if($k->id_karyawan == $m->id_koki1 || $k->id_karyawan == $m->id_koki2 || $k->id_karyawan == $m->id_koki3): ?>
-            <td><i class="text-success fas fa-check-circle"></i></td>
-            <?php else: ?>
-            <td></td>
-            <?php endif; ?>
-            <?php endforeach ?>
-            @php
-                $mulai = new DateTime($m->j_mulai);
-                $selesai = new DateTime($m->j_selesai);
-                
-                $menit = $selesai->diff($mulai);
-            @endphp
-            <?php if (date('H:i', strtotime($m->j_selesai)) < date('H:i', strtotime($m->j_mulai . '+'.$setMenit->menit.'minutes'))) : ?>
-            <td><b style="color:blue;"><?= date('H:i', strtotime($m->j_selesai)) ?> / {{ $menit->i }} Menit /
-                    {{ $menit->s }} Detik</b></td>
-            <?php else : ?>
-            <td><b style="color:red;"><?= date('H:i', strtotime($m->j_selesai)) ?> / {{ $menit->i }} Menit /
-                    {{ $menit->s }} Detik</b></td>
-            <?php endif ?>
-        </tr>
-        <?php endforeach ?>
-        <?php foreach ($menu as $m) : if($m->nm_menu == ''){continue;} ?>
+        @endphp
+        <?php foreach ($menu as $m) : ?>
         <tr class="header">
             <td></td>
-            <td style="white-space:nowrap;text-transform: lowercase;"><?= $m->nm_menu ?> <span
-                    class="text-danger">({{ $m->ttlMenuSemua }})</span></td>
+            <td style="white-space:nowrap;text-transform: lowercase;"><?= $m->nm_menu ?> <span class="text-danger">({{$m->ttlMenuSemua}})</span></td>
             <td><?= $m->request ?></td>
             <td><?= $m->qty ?></td>
             <?php if ($m->selesai == 'dimasak') : ?>
@@ -150,7 +117,8 @@
 </table>
 
 
-
+<script src="{{ asset('assets') }}plugins/jquery/jquery.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
 <script>

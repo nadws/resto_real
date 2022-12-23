@@ -28,8 +28,21 @@ class Point_masak extends Controller
                 $tgl1 = $r->tgl1;
                 $tgl2 = $r->tgl2;
             }
-            $lamaMenit = DB::table('tb_menit')->where('id_lokasi',$id_lokasi)->first();
-            
+            if ($this->input->get('tgl1')) {
+                $cabut = $this->db->select('cabut.*,tb_user_tugas.*,cabut.divisi as divisi')
+                    ->join('tb_user_tugas', 'cabut.id_anak=tb_user_tugas.kd_user', 'left')
+                    ->where('cabut.id_pengawas', $id_pengawas)
+                    ->where("if(cabut.spesial = 'Y' , 
+                        cabut.selesai = 'T', 
+                        if(cabut.spesial = 'T', 
+                        cabut.selesai = 'T', 
+                        cabut.ttl_gr_ambil * (cabut.target_eot / 100) > cabut.eot)
+                        )")->where('tgl >=', $tgl1)->where('tgl <=', $tgl2)->order_by('cabut.tgl', 'DESC')->get('cabut')->result();
+            } else {
+                $cabut = $this->db->select('cabut.*,tb_user_tugas.*,cabut.divisi as divisi')->join('tb_user_tugas', 'cabut.id_anak=tb_user_tugas.kd_user', 'left')->where('cabut.id_pengawas', $id_pengawas)->where("if(cabut.spesial = 'Y' , cabut.selesai = 'T',if(cabut.selesai = 'T', cabut.selesai = 'T', cabut.ttl_gr_ambil * (cabut.target_eot / 100) > cabut.eot))")->order_by('cabut.tgl', 'DESC')->get('cabut')->result();
+            }
+            $lamaMenit = DB::table('tb_menit')->where('id_lokasi', $id_lokasi)->first();
+
 
 
             $total_not_gojek = DB::selectOne("SELECT SUM(if(tb_transaksi.total_orderan - discount - voucher < 0 ,0,tb_transaksi.total_orderan - discount - voucher)) as total FROM `tb_transaksi`
@@ -131,7 +144,7 @@ class Point_masak extends Controller
                 $tgl1 = $r->tgl1;
                 $tgl2 = $r->tgl2;
             }
-            $lamaMenit = DB::table('tb_menit')->where('id_lokasi',$id_lokasi)->first();
+            $lamaMenit = DB::table('tb_menit')->where('id_lokasi', $id_lokasi)->first();
 
 
             $total_not_gojek = DB::selectOne("SELECT SUM(if(tb_transaksi.total_orderan - discount - voucher < 0 ,0,tb_transaksi.total_orderan - discount - voucher)) as total FROM `tb_transaksi`
@@ -194,7 +207,7 @@ class Point_masak extends Controller
             $tgl1 = $r->tgl1;
             $tgl2 = $r->tgl2;
         }
-        $lamaMenit = DB::table('tb_menit')->where('id_lokasi',$id_lokasi)->first();
+        $lamaMenit = DB::table('tb_menit')->where('id_lokasi', $id_lokasi)->first();
         $service = DB::selectOne("SELECT SUM(if(tb_transaksi.total_orderan - discount - voucher < 0 ,0,tb_transaksi.total_orderan - discount - voucher)) as total FROM `tb_transaksi`
         LEFT JOIN(SELECT tb_order2.no_order2 as no_order, tb_order2.id_distribusi as id_distribusi FROM tb_order2 GROUP BY tb_order2.no_order2) dt_order ON tb_transaksi.no_order = dt_order.no_order
         WHERE tb_transaksi.id_lokasi = '$id_lokasi' and  dt_order.id_distribusi != '2' AND tb_transaksi.tgl_transaksi >= '$tgl1' AND tb_transaksi.tgl_transaksi <= '$tgl2'");
@@ -387,7 +400,7 @@ class Point_masak extends Controller
             $tgl1 = $r->tgl1;
             $tgl2 = $r->tgl2;
         }
-        $lamaMenit = DB::table('tb_menit')->where('id_lokasi',$id_lokasi)->first();
+        $lamaMenit = DB::table('tb_menit')->where('id_lokasi', $id_lokasi)->first();
         $service = DB::selectOne("SELECT SUM(if(tb_transaksi.total_orderan - discount - voucher < 0 ,0,tb_transaksi.total_orderan - discount - voucher)) as total FROM `tb_transaksi`
         LEFT JOIN(SELECT tb_order2.no_order2 as no_order, tb_order2.id_distribusi as id_distribusi FROM tb_order2 GROUP BY tb_order2.no_order2) dt_order ON tb_transaksi.no_order = dt_order.no_order
         WHERE tb_transaksi.id_lokasi = '$id_lokasi' and  dt_order.id_distribusi != '2' AND tb_transaksi.tgl_transaksi >= '$tgl1' AND tb_transaksi.tgl_transaksi <= '$tgl2'");

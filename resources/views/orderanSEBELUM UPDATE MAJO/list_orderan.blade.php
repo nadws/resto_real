@@ -109,15 +109,7 @@
                     ttl_rp1 += parseFloat($(this).val());
 
                 });
-                var ttl_rp2 = 0;
-                $(".tl_majo").each(function() {
-                    ttl_rp2 += parseFloat($(this).val());
-
-                });
-
-                var sub_total = ttl_rp1 + ttl_rp2;
-
-                var number2 = sub_total.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
+                var number2 = ttl_rp1.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
                 $('.total_qty').text(qty1);
                 $('.total_hrg').text(number2);
                 $('.ttl_hrg').val(ttl_rp1);
@@ -147,9 +139,9 @@
                     var service = 0;
                 }
                 if (a_ser == 'Y') {
-                    var tax = (ttl_rp1 + + ttl_rp2 + service + ongkir) * 0.1;
+                    var tax = (ttl_rp1 + service + ongkir) * 0.1;
                 } else {
-                    var tax = (ttl_rp1 + + ttl_rp2 + ongkir) * 0.1;
+                    var tax = (ttl_rp1 + ongkir) * 0.1;
                 }
 
                 var number3 = ongkir.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
@@ -164,7 +156,7 @@
                 $('.tax').text(tax1);
                 $('.tax1').val(tax);
 
-                var total = ttl_rp1 +  ttl_rp2 + service + tax + ongkir;
+                var total = ttl_rp1 + service + tax + ongkir;
 
 
                 var a = Math.round(total);
@@ -203,11 +195,10 @@
             });
             function reset(){
                 var ttl_hrg2 = $('#ttl_hrg2').val();
-                var ttl_majo = $('#ttl_majo').val();
                 var tax2 = $('.tax2').val();
                 var round2 = $('.round2').val();
                 var service2 = $('.servis2').val();
-                var ttl = parseInt(ttl_hrg2) + parseInt(ttl_majo) + parseInt(tax2) + parseInt(service2) + parseInt(round2)
+                var ttl = parseInt(ttl_hrg2) + parseInt(tax2) + parseInt(service2) + parseInt(round2)
 
 
                 $('#view_discount').val('');
@@ -217,12 +208,12 @@
                 $('.sDiskon').val(round2);
                 $('.round').val(round2);
                 $('.servis1').val(service2);
-                $('.servis').html(service2);
+                $('.servis').html(service2);  
                 $('.tax1').val(tax2);
-                $('.tax').html(tax2);
+                $('.tax').html(tax2);  
 
                 $('.kd_voucher').val('');
-                $('#rupiah').val(0);
+                $('#rupiah').val(0);  
                 $("#view_dp").val(0);
                 $("#data_dp").val(0);
                 $("#id_dp").val(0);
@@ -233,7 +224,6 @@
             $(document).on('change', '#data_discount', function(){
                 var id_disc = $(this).val();
                 var ttl_hrg = $('#ttl_hrg').val();
-                var ttl_majo = $('#ttl_majo').val();
                 var ttl_hrg2 = $('#ttl_hrg2').val();
                 var view_discount = $('#view_discount').val();
                 var tax = $('#tax').val();
@@ -248,7 +238,15 @@
                 var jumlahDp = $("#jumlah_dp").val();
                 if(id_disc == 0) {
                     reset()
-
+                    // $('#view_discount').val('');
+                    // $('#total1').val(ttl);
+                    // $('.sDiskon').val(round2);
+                    // $('.round').val(round2);
+                    // $('.servis1').val(service2);
+                    // $('.servis').html(service2);  
+                    // $('.tax1').val(tax2);
+                    // $('.tax').html(tax2);  
+                                         
                 } else {
                     $.ajax({
                         url: "<?= route('get_discount') ?>?id_discount=" + id_disc,
@@ -260,10 +258,10 @@
                                 $("#jumlah_dp").val('');
                                 $("#kode_dp").val('');
                                 $("#view_dp").val('');
-
+                                
                             }
                             $("#jumlah_discount").val(data.disc);
-                            var tHarga = (parseInt(ttl_hrg) + parseInt(ttl_majo)) * (100 - parseInt(data.disc)) / 100 - voucher
+                            var tHarga = parseInt(ttl_hrg) * (100 - parseInt(data.disc)) / 100 - voucher
                             var service = tHarga * 0.07;
                             var tax = (tHarga + service) * 0.1;
                             var t = tHarga + service + tax;
@@ -283,21 +281,21 @@
                                 tax = 0
                                 service = 0
                             } else {
-                                c = c
+                                c = c 
                                 tax = tax
                                 service = service
                             }
-
+                                      
                             $('#total1').val(c);
                             $('#totalTetap').val(c);
                             $('.round').val(round);
                             $('.round2').val(round2);
                             $('.sDiskon').val(tHarga);
                             $('.servis').html(service);
-                            $('.servis1').val(service);
+                            $('.servis1').val(service);   
                             $('.tax').html(tax);
-                            $('.tax1').val(tax);
-                            $('#jumlah_discount').val($("#jumlah_discount").val());
+                            $('.tax1').val(tax);   
+                            $('#jumlah_discount').val($("#jumlah_discount").val());   
                             $("#view_discount").val($("#jumlah_discount").val()+' %');
                             $(".vDiskon").val($("#jumlah_discount").val());
                         }
@@ -312,13 +310,11 @@
                 var view_discount = $('#view_discount').val()
                 var gosen = $('#gosen').val();
                 var ttl_hrg = $('#ttl_hrg').val();
-                var ttl_majo = $('#ttl_majo').val();
                 var ttl_hrg2 = $('#ttl_hrg2').val();
                 var sDiskon = $('.sDiskon').val();
                 var vDiskon = $('.vDiskon').val();
                 var jumlahDp = $("#jumlah_dp").val();
                 var total_tetap = $('#totalTetap').val();
-                
                 if (kode == '') {
                     Swal.fire({
                         toast: true,
@@ -354,7 +350,7 @@
                                         icon: 'error',
                                         title: 'Voucher sudah terpakai'
                                     });
-                                } else if(data == 'expired') {
+                                } if(data == 'expired') {
                                     Swal.fire({
                                         toast: true,
                                         position: 'top-end',
@@ -375,7 +371,7 @@
                                             title: 'Voucher non-aktif'
                                         });
                                     } else {
-
+                                        
                                         if(jumlahDp > 0) {
                                             $("#data_dp").val(0);
                                             $("#jumlah_dp").val('');
@@ -383,16 +379,15 @@
                                             $("#view_dp").val('');
                                         }
                                         $('#rupiah').val(data);
-                                        var subTotalMajo = parseInt(ttl_hrg) + parseInt(ttl_majo)
+                                        
                                         if(sDiskon == parseInt($('.round').val())) {
-                                            var tot_orderan = subTotalMajo - data;
-                                          
+                                            var tot_orderan = ttl_hrg - data;
+                                        
                                         } else {
-                                            alert(2)
-
+                                           
                                             var tot_orderan = parseInt(sDiskon) - data;
                                         }
-
+                                    
                                         if(tot_orderan < 1) {
                                             tot_orderan = 0
                                             var service = 0;
@@ -428,11 +423,11 @@
                                                 service = service
                                             }
                                         }
-
-
-
-
-
+                                       
+                                            
+                                            
+                                            
+                                      
                                         $('#total1').val(c);
                                         $('#totalTetap').val(c);
                                         $('#tvoucher').val(c);
@@ -484,7 +479,7 @@
                 var kode = $('.kd_voucher').val();
                 var ttl1 = $('#total1').val();
                 var ttl2 = $('#total2').val();
-
+                
                 var ttl_hrg2 = $('#ttl_hrg2').val();
                 var view_dp = $('#view_dp').val();
                 var view_discount = $('#view_discount').val();
@@ -529,7 +524,7 @@
 
             });
 
-
+            
 
             $(document).on("change", "#data_dp", function() {
                 var id_dp = $(this).val();
@@ -542,7 +537,7 @@
                 var voucher = $('#rupiah').val();
                 var vDiskon = $('.vDiskon').val();
                 var totalTetap = $('#totalTetap').val();
-
+             
                 if (id_dp == 0) {
                     // var tb = 0
                     // if(rupiah != '') {
@@ -555,40 +550,40 @@
                         // $("#view_dp").val(0);
                         // $("#id_dp").val(0);
                         // $("#kembalian1").val(0);
-
+                    
                 } else {
                     $.ajax({
                         url: "<?= route('get_dp') ?>?id_dp=" + id_dp,
                         method: "GET",
                         dataType: "json",
                         success: function(data) {
-
-
+                         
+                            
                             var kembali = 0
-
+                            
                             $("#jumlah_dp").val(data.jumlah);
                             $("#kode_dp").val(data.kd_dp);
                             $("#id_dp").val(data.id_dp);
                             // if(rupiah != '' || vDiskon != '') {
-
+                                
                             // } else {
                             //     var total_bayar = ttl1 - rupiah + parseFloat(gosen) - parseInt($("#jumlah_dp").val())
                             // }
-
+                           
                             var total_bayar = totalTetap - parseInt($("#jumlah_dp").val())
-
+                         
                             if(total_bayar < 0) {
                                 kembali =- total_bayar
                                 total_bayar = 0
-
+                             
                             } else {
                                 kembali = 0
                                 total_bayar = total_bayar
-
+                                
                             }
-
-
-
+                        
+                    
+                            
                             // if(total_bayar < 0) {
                             //     total_bayar = 0
                             //     var kembali = parseInt($("#jumlah_dp").val()) - parseInt(total_bayar);
@@ -603,7 +598,7 @@
                             // } else {
                             //     kembali = 0
                             // }
-
+                          
                             $("#total1").val(total_bayar);
                             $("#kembalian1").val(kembali);
                             $("#view_dp").val($("#jumlah_dp").val());

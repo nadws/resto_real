@@ -122,7 +122,7 @@
                 <input type="hidden" class="ttl_hrg2" id="ttl_hrg2" value="<?= $total2 ?>">
                 <input type="hidden" class="order" value="<?= $no ?>">
                 <input type="hidden" name="id_distribusi" value="<?= $id_distribusi ?>">
-                <input type="hidden" name="total_majo" id="ttl_majo" value="<?= $total2_majo ?>">
+                <input type="hidden" name="total_majo" value="<?= $total2_majo ?>">
             </th>
         </tr>
     </tbody>
